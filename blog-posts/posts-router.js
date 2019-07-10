@@ -32,13 +32,14 @@ router.post('/', (req, res) => {
 router.post('/:id/comments', (req, res) => {
   const { text } = req.body;
   const { id } = req.params;
+  // const { postid } = req.params;
 
-  if(!text) {
+  if(!text && !id) {
     res
       .status(400)
       .json({ errorMessage: "Please provide text for the comment." })
   } else {
-    Posts.insertComment(text)
+    Posts.insertComment({text: text, post_id: id})
       .then(comment => {
         if(comment) {
           res.status(201).json(comment);
@@ -50,7 +51,8 @@ router.post('/:id/comments', (req, res) => {
       })
       .catch(() => {
         res.status(500).json({
-          error: "There was an error while saving the comment to the database"
+          error: "There was an error while saving the comment to the database",
+          data: `${req.params.id}`
         })
       });
   }
